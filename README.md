@@ -172,7 +172,7 @@ Other Documentations:
 
 Android Banner | Android Interstitial
 -------|---------------
-![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_banner.png) | ![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_interstitial.png)
+![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_banner.jpg) | ![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_interstitial.jpg)
 
 
 ## License
