@@ -75,12 +75,33 @@
         }
 
         .native {
-            align-content: center;
+            align-items: center;
             display: flex;
+            padding: 8px;
+            flex-direction: row;
+        }
+        .native-content {
+            flex: 1;
+            flex-direction: column;
+            padding: 2px;
         }
 
+        .native-cta {
+            border-color: transparent;
+            border-radius: 8px;
+            background-color: cadetblue;
+            height: 24px;
+            width: 72px;
+        }
+        .native-icon {
+            border-radius: 8px;
+        }
         .native-headline {
-            flex: 1;
+            font-size: 10px;
+        }
+
+        .native-description {
+            font-size: 7px;
         }
     </style>
 </head>
@@ -114,25 +135,25 @@
 
         function initAd() {
 
-            $(document).on('onAdLoaded', function(e) {
+            $(document).on('onInterstitialAdLoaded', function(e) {
                 if (typeof e.originalEvent !== 'undefined') e = e.originalEvent;
                 var data = e.detail || e.data || e;
 
-                consoleLog("onAdLoaded. Type: " + data.adType);
+                consoleLog("onInterstitialLoaded.");
             });
 
-            $(document).on('onAdRewarded', function(e) {
+            $(document).on('onRewardedAdLoaded', function(e) {
                 if (typeof e.originalEvent !== 'undefined') e = e.originalEvent;
                 var data = e.detail || e.data || e;
 
-                consoleLog("onAdRewarded. Type: " + data.adType);
+                consoleLog("onAdRewardedLoaded");
             });
 
-            $(document).on('onShowFailed', function(e) {
+            $(document).on('onRewardedAdClosed', function(e) {
                 if (typeof e.originalEvent !== 'undefined') e = e.originalEvent;
                 var data = e.detail || e.data || e;
 
-                consoleLog("onShowFailed. Message: " + data.message);
+                consoleLog("onRewardedClosed + isRewarded: " + data.isRewarded);
             });
 
             Adivery.initialize("7e27fb38-5aff-473a-998f-437b89426f66");
@@ -189,6 +210,7 @@
                 $('#native_icon').attr('src', data['icon']);
                 $('#native_image').attr('src', data['image']);
                 $('#native_cta').append(data['callToAction']);
+                $('#native_description').append(data['description']);
                 Adivery.recordNativeAdImpression();
 
                 $('#native_cta').click(function() {
@@ -217,6 +239,7 @@
             <option value='1'>320x50</option>
             <option value='2'>320x100</option>
             <option value='3'>300x250</option>
+            <option value='4'>SMART</option>
         </select>
         <select id="adPosition">
             <option value='0'>Top Left</option>
@@ -241,6 +264,16 @@
 
         <p id="h3_full">Native</p>
         <button id="btn_naive">Load Native Ad</button>
+
+        <div class="native">
+            <img class="native-icon" id="native_icon" width="56px" height="56px"/>
+            <div class="native-content">
+                <p class="native-headline" id="native_headline"></p>
+                <p class="native-description" id="native_description"></p>
+            </div>
+            <button class="native-cta" id="native_cta"></button>
+            <img  class="native-icon" id="native_image" width="100px" height="56px"/>
+        </div>
         <hr />
 
         <p id='h3_full'>Interstitial</p>
@@ -257,10 +290,9 @@
         <button id='btn_prepareappopen'>Prepare AppOpenAd</button>
         <button id='btn_showappopen'>Show AppOpenAd</button>
 
-        <img id="native_icon" width="56px" height="56px"/>
-        <div class="native-headline" id="native_headline"></div>
-        <button id="native_cta"></button>
-        <img id="native_image" width="300px" height="150px"/>
+        <p>
+            <textarea rows=6 cols=30 id='textinfo' readonly></textarea>
+        </p>
 
     </div>
 </body>
