@@ -11,9 +11,10 @@ module.exports = {
 		BOTTOM_RIGHT: 8
     },
 	AD_SIZE: {
-        BANNER_320x50: 1,
-		BANNER_320x100: 2,
-		BANNER_300x250: 3
+        BANNER_SMALL: 1,
+		BANNER_LARGE: 2,
+		BANNER_MEDIUM_RECTANGLE: 3,
+        BANNER_SMART: 4,
     },
     initialize: function(appID) {
         cordova.exec(
@@ -21,8 +22,42 @@ module.exports = {
 			null,
             'Adivery',
             'initialize',
-            [appID]
+            [ appID ]
         ); 
+    },
+    setLoggingEnabled: function(logEnabled) {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "setLoggingEnabled",
+            [ logEnabled ]
+        );
+    },
+    requestNativeAd: function(zoneId) {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "requestNativeAd",
+            [ zoneId ]
+        )
+    },
+    recordNativeAdImpression: function() {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "recordNativeAdImpression",
+        )
+    },
+    recordNativeAdClick: function() {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "recordNativeAdClick",
+        )
     },
     createBanner: function(zoneId, position, type) {
         cordova.exec(
@@ -69,34 +104,49 @@ module.exports = {
             []
         ); 
     },
-    requestInterstitialAd: function (zoneId) {
-        var self = this;
+    prepareInterstitialAd: function (zoneId) {
         cordova.exec(
             null,
             null,
             'Adivery',
-            'requestInterstitialAd',
+            'prepareInterstitialAd',
             [ zoneId ]
         );
     },
-    requestRewardedAd: function (zoneId) {
-        var self = this;
+    prepareRewardedAd: function (zoneId) {
         cordova.exec(
             null,
             null,
             'Adivery',
-            'requestRewardedAd',
+            'prepareRewardedAd',
             [ zoneId ]
         );
     },
-    showAd: function () {
-        var self = this;
+    prepareAppOpenAd: function (zoneId) {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "prepareAppOpenAd",
+            [ zoneId ]
+        )
+    },
+    showAd: function (zoneId) {
         cordova.exec(
             null,
             null,
             'Adivery',
             'showAd',
-            []
+            [ zoneId ]
         );
+    },
+    showAppOpenAd: function(zoneId) {
+        cordova.exec(
+            null,
+            null,
+            "Adivery",
+            "showAppOpenAd",
+            [ zoneId ]
+        )
     }
 };
