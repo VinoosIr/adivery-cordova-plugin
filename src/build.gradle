@@ -4,5 +4,5 @@ repositories{
 }
 
 dependencies {
-	implementation 'com.adivery:sdk:4.5.4'
+	implementation 'com.adivery:sdk:4.5.5'
 }

@@ -11,7 +11,7 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- to avoid the warning of content security policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * gap://ready file:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <meta http-equiv="Content-Security-Policy" content="default-src * gap://ready file:; style-src 'self' 'unsafe-inline'; 'self' data:; script-src * 'unsafe-inline' 'unsafe-eval'">
 
     <title>Adivery Sample</title>
     <script>
@@ -73,6 +73,15 @@
             margin: 5px;
 			font-size: 11px;
         }
+
+        .native {
+            align-content: center;
+            display: flex;
+        }
+
+        .native-headline {
+            flex: 1;
+        }
     </style>
 </head>
 
@@ -80,9 +89,11 @@
     <script>
         var zoneid = {};
         zoneid = {
-            banner: 'bcf963b9-d227-4fdc-b3cf-fe773ea747a8',
-            interstitial: 'b4a48192-771a-4a25-b556-31744fbb3b71',
-            rewardvideo: 'ada59914-37f4-43c8-b12c-afcb55317034',
+            banner: '2f71ec44-f30a-4043-9cc1-f32347a07f8b',
+            native: '25928bf1-d4f7-432c-aaf7-1780602796c3',
+            interstitial: '0045a4aa-1498-4790-9eed-6e33ac870e5f',
+            rewardvideo: '2efedcaa-fcc0-4610-a025-109ff17594af',
+            appopen: '9e9dd375-a1fe-4c2b-8432-b5bf8a5095f6',
         };
 
         function createSelectedBanner() {
@@ -124,7 +135,8 @@
                 consoleLog("onShowFailed. Message: " + data.message);
             });
 
-            Adivery.initialize("5579752e-cec2-4f81-b5d1-69f001f70a92");
+            Adivery.initialize("7e27fb38-5aff-473a-998f-437b89426f66");
+            Adivery.setLoggingEnabled(true);
 
             $('#btn_create').click(createSelectedBanner);
             $('#btn_createXY').click(createBannerAtPosition);
@@ -140,24 +152,49 @@
             });
 
             $('#btn_prepare').click(function() {
-                Adivery.requestInterstitialAd(zoneid.interstitial);
+                Adivery.prepareInterstitialAd(zoneid.interstitial);
             });
 
             $('#btn_showfull').click(function() {
-                Adivery.showAd();
+                Adivery.showAd(zoneid.interstitial);
             });
 
             $('#btn_preparevideo').click(function() {
-                Adivery.requestRewardedAd(zoneid.rewardvideo);
+                Adivery.prepareRewardedAd(zoneid.rewardvideo);
+            });
+            $('#btn_prepareappopen').click(function() {
+                Adivery.prepareAppOpenAd(zoneid.appopen)
+            });
+            $('#btn_showappopen').click(function() {
+                Adivery.showAppOpenAd(zoneid.appopen)
             });
 
             $('#btn_showvideo').click(function() {
-                Adivery.showAd();
+                Adivery.showAd(zoneid.rewardvideo);
+            });
+            
+            $('#btn_naive').click(function () {
+                Adivery.requestNativeAd(zoneid.native);
             });
 
             $(document).on('backbutton', function() {
                 if (window.confirm('Are you sure to quit?')) navigator.app.exitApp();
             });
+
+            $(document).on("nativeAdLoaded", function(e) {
+                if (typeof e.originalEvent !== 'undefined') e = e.originalEvent;
+                var data = e.detail || e.data || e;
+                console.log("native ad loaded", data['icon']);
+                $('#native_headline').append(data['headline']);
+                $('#native_icon').attr('src', data['icon']);
+                $('#native_image').attr('src', data['image']);
+                $('#native_cta').append(data['callToAction']);
+                Adivery.recordNativeAdImpression();
+
+                $('#native_cta').click(function() {
+                    Adivery.recordNativeAdClick();
+                });
+            })
         }
 
         function consoleLog(message) {
@@ -202,18 +239,28 @@
         <button id='btn_createXY'>Create Banner At XY</button>
         <hr />
 
+        <p id="h3_full">Native</p>
+        <button id="btn_naive">Load Native Ad</button>
+        <hr />
+
         <p id='h3_full'>Interstitial</p>
-        <button id='btn_prepare'>Request InterstitialAd</button>
+        <button id='btn_prepare'>Prepare InterstitialAd</button>
         <button id='btn_showfull'>Show InterstitialAd</button>
         <hr />
 
         <p id='h3_video'>Rewarded Video</p>
-        <button id='btn_preparevideo'>Request RewardedAd</button>
+        <button id='btn_preparevideo'>Prepare RewardedAd</button>
         <button id='btn_showvideo'>Show RewardedAd</button>
+        <hr/>
 
-        <p>
-            <textarea rows=6 cols=30 id='textinfo' readonly></textarea>
-        </p>
+        <p id='h3_appopen'>AppOpen</p>
+        <button id='btn_prepareappopen'>Prepare AppOpenAd</button>
+        <button id='btn_showappopen'>Show AppOpenAd</button>
+
+        <img id="native_icon" width="56px" height="56px"/>
+        <div class="native-headline" id="native_headline"></div>
+        <button id="native_cta"></button>
+        <img id="native_image" width="300px" height="150px"/>
 
     </div>
 </body>

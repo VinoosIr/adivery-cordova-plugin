@@ -1,6 +1,6 @@
 {
   "name": "adivery-cordova-plugin",
-  "version": "3.4.2",
+  "version": "4.5.4",
   "description": "Ultimate Cordova Plugin for Adivery to monetize hybrid apps. Show mobile Ad with single line of JavaScript. Compatible with Cordova CLI, PhoneGap Build, Ionic, etc.",
   "cordova": {
     "id": "adivery-cordova-plugin",

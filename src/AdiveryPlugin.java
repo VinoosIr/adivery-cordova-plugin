@@ -27,6 +27,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
+import java.util.logging.Logger;
+
 @SuppressLint("RtlHardcoded")
 public class AdiveryPlugin extends CordovaPlugin {
     private static final String TAG = "AdiveryPlugin";
@@ -34,6 +36,7 @@ public class AdiveryPlugin extends CordovaPlugin {
     public CordovaInterface cordova = null;
     private FrameLayout bannerLayout;
     private Application _app;
+    private AdiveryNativeAd nativeAd;
 
     public static final int TOP_LEFT = 0;
     public static final int TOP_CENTER = 1;
@@ -60,6 +63,11 @@ public class AdiveryPlugin extends CordovaPlugin {
         if (action.equals("initialize")) {
             String appId = args.getString(0);
             init(appId);
+            return true;
+        }
+        if (action.equals("setLoggingEnabled")){
+            boolean logEnabled = args.getBoolean(0);
+            Adivery.setLoggingEnabled(logEnabled);
             return true;
         }
         if (action.equals("createBanner")) {
@@ -138,12 +146,32 @@ public class AdiveryPlugin extends CordovaPlugin {
             prepareNativeAd(zoneId);
             return true;
         }
+        if (action.equals("recordNativeAdImpression")){
+            recordNativeAdImpression();
+            return true;
+        }
+        if (action.equals("recordNativeAdClick")){
+            recordNativeAdClick();
+            return true;
+        }
         if (action.equals("showAd")) {
             String zoneId = args.getString(0);
             showAd(zoneId);
             return true;
         }
         return false;
+    }
+
+    private void recordNativeAdImpression() {
+        if (this.nativeAd != null){
+            this.nativeAd.recordImpression();
+        }
+    }
+
+    private void recordNativeAdClick(){
+        if (this.nativeAd != null){
+            this.nativeAd.recordClick();
+        }
     }
 
     private void init(String appId) {
@@ -294,7 +322,7 @@ public class AdiveryPlugin extends CordovaPlugin {
                 bannerLayout = new FrameLayout(mActivity);
                 FrameLayout.LayoutParams params = createBannerLayoutParams(position);
                 bannerLayout.setLayoutParams(params);
-                mActivity.getWindow().addContentView(bannerLayout, null);
+                mActivity.getWindow().addContentView(bannerLayout, params);
                 AdiveryBannerAdView adView = new AdiveryBannerAdView(mActivity);
                 adView.setBannerSize(bannerSize);
                 adView.loadAd(zoneId);
@@ -306,7 +334,9 @@ public class AdiveryPlugin extends CordovaPlugin {
 
                     @Override
                     public void onAdLoaded() {
+                        Log.i("Adivery", "Banner loaded");
                         fireEvent("adivery", "onBannerAdLoaded", "");
+                        bannerLayout.addView(adView);
                     }
 
                     @Override
@@ -320,10 +350,9 @@ public class AdiveryPlugin extends CordovaPlugin {
     }
 
     public FrameLayout.LayoutParams createBannerLayoutParams(final int position) {
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        ;
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         if (position == TOP_LEFT) {
-            layoutParams.gravity = Gravity.TOP;
+            layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         } else if (position == TOP_CENTER) {
             layoutParams.gravity = Gravity.TOP | Gravity.CENTER;
         } else if (position == TOP_RIGHT) {
@@ -370,6 +399,7 @@ public class AdiveryPlugin extends CordovaPlugin {
                     @Override
                     public void onAdLoaded() {
                         fireEvent("adivery", "onBannerAdLoaded", "");
+                        bannerLayout.addView(adView);
                     }
 
                     @Override
@@ -485,6 +515,7 @@ public class AdiveryPlugin extends CordovaPlugin {
             public void onAdLoaded(@NotNull NativeAd ad) {
                 JSONObject nativeObject = new JSONObject();
                 AdiveryNativeAd nativeAd = (AdiveryNativeAd) ad;
+                AdiveryPlugin.this.nativeAd = nativeAd;
                 try {
                     nativeObject.put("headline", nativeAd.getHeadline());
                     nativeObject.put("description", nativeAd.getDescription());
@@ -496,6 +527,7 @@ public class AdiveryPlugin extends CordovaPlugin {
                     fireEvent("adivery", "nativeAdLoaded", json);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    AdiveryPlugin.this.nativeAd = null;
                 }
             }
 
@@ -523,9 +555,14 @@ public class AdiveryPlugin extends CordovaPlugin {
     }
 
     private void showAppOpenAd(String zoneId) {
-        if (Adivery.isLoaded(zoneId)) {
-            Adivery.showAppOpenAd(mActivity, zoneId);
-        }
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Adivery.isLoaded(zoneId)) {
+                    Adivery.showAppOpenAd(mActivity, zoneId);
+                }
+            }
+        });
     }
 
     public void fireEvent(String obj, String eventName, String jsonData) {
