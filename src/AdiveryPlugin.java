@@ -270,7 +270,8 @@ public class AdiveryPlugin extends CordovaPlugin {
             @Override
             public void onRewardedAdClosed(String placementId, boolean isRewarded) {
                 try {
-                    String json = new JSONObject().put("placement", placementId).toString();
+                    String json = new JSONObject().put("placement", placementId)
+                    .put("isRewarded", isRewarded).toString();
                     fireEvent("adivery", "onRewardedAdClosed", json);
                 } catch (JSONException e) {
                     e.printStackTrace();
