@@ -13,10 +13,8 @@ Cordova / PhoneGap Plugin for Adivery.
 5. [Installation](#installation)
 6. [Usage](#usage)
 7. [API](#api)
-8. [Wiki and Docs](#wiki-and-docs)
-9. [Screenshots](#screenshots)
-10. [License](#license)
-11. [Credits](#credits)
+8. [License](#license)
+9. [Credits](#credits)
 
 ## Description
 
@@ -82,11 +80,11 @@ cordova plugin add adivery-cordova-plugin
 
 * If use with PhoneGap Build:
 ```xml
-<plugin name="adivery-cordova-plugin" source="npm"></plugin>
+<plugin name="adivery-cordova" source="npm"></plugin>
 ```
 
 Notice:
-* If build locally using ```adivery-cordova-plugin```, to avoid build error, you need install some extras in Android SDK manager (type ```android sdk``` to launch it):
+* If build locally using ```adivery-cordova```, to avoid build error, you need install some extras in Android SDK manager (type ```android sdk``` to launch it):
 ![android extra](https://cloud.githubusercontent.com/assets/2339512/8176143/20533ec0-1429-11e5-8e17-a748373d5110.png)
 
 ## Usage
