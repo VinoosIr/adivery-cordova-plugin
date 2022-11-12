@@ -32,14 +32,15 @@ Platforms supported:
 
 Ad Types:
 - [x] Banner
-- [x] Interstitial (picture, video), highly recommended. :fire:
-- [x] Reward Video, highly recommended. :fire:
-- [ ] Native Ads (on roadmap)
-- [ ] Native Ads Advanced (on roadmap)
+- [x] Interstitial
+- [x] Reward Video
+- [x] Native Ads
+- [x] Native Ads Advanced
+- [x] AppOpen Ads
 
 ## Quick Demo
 
-Wanna quickly see the mobile ad on your simulator or device? Try the following commands.
+To quickly test this plugin and see ads on your devices use commands bellow.
 
 ```bash
     # install cordova CLI
@@ -92,31 +93,142 @@ Notice:
 
 Show Mobile Ad with single line of javascript code.
 
-Step 1: Create new application, in [Adivery portal](http://www.adivery.com/), then write it in your javascript code.
+### Initialization
+
+Create new application, in [Adivery portal](http://www.adivery.com/), then write it in your javascript code and replace AppID with the ID generated for your application in Adivery panel.
 
 ```javascript
 Adivery.initialize('AppID');
 ```
 
-Step 2: Want cheap and basic banner? single line of javascript code.
+### Banner ads
+
+To create banner ads in your application use code bellow.
 
 ```javascript
 // it will display small banner at top center, using the default options
-Adivery.createBanner(zoneId, Adivery.AD_POSITION.TOP_CENTER, Adivery.AD_SIZE.BANNER_320x50);
+Adivery.createBanner(zoneId, Adivery.AD_POSITION.TOP_CENTER, Adivery.AD_SIZE.BANNER_SMALL);
 ```
 
-Step 3: Want interstitial Ad to earn more money ? Easy, 2 lines of code. 
+### Interstitial
+
+To prepare Interstitial ads on your application run code bellow.  
 
 ```javascript
 // prepare and load interstitial ad resource in background, e.g. at begining of game level
 Adivery.prepareInterstitialAd(zoneId);
-
-// prepare and load rewarded ad resource in background, e.g. at begining of game level
-Adivery.prepareRewardedAd(zoneId);
-
-// show the interstitial or rewarded ad later, e.g. at end of game level
-Adivery.showAd();
 ```
+
+* :alert: Adivery will automatically request next ad when current ad is displayed and there is no need to call `prepareInterstitialAd` again.
+
+To get events related to Interstitial ads use code bellow.
+
+```javascript
+document.addEventListener('onInterstitialAdLoaded', function(event) {
+	if (typeof event.originalEvent !== 'undefined') event = event.originalEvent;
+    var data = eevent.detail || event.data || event;
+
+	console.log("Adivery InterstitialAd Loaded", data.placementId);
+});
+```
+
+### Rewarded
+
+To prepare Rewarded ads on your application use code bellow.
+
+```javascript
+// prepare and load Rewarded ad resource in background, e.g. at begining of game level
+Adivery.prepareRewardedAd(zoneId);
+```
+
+* :alert: Adivery will automatically request next ad when current ad is displayed and there is no need to call `prepareRewardedAd` again.
+
+To get events related to rewarded ads use code bellow.
+
+```javascript
+document.addEventListener('onRewardedAdClosed', function(event) {
+	if (typeof event.originalEvent !== 'undefined') event = event.originalEvent;
+    var data = eevent.detail || event.data || event;
+
+	console.log("Adivery RewardedAd closed, isRewared:", data.isRewarded);
+});
+```
+
+### AppOpen
+
+To prepare AppOpen ads on your application run code bellow.  
+
+```javascript
+// prepare and load interstitial ad resource in background, e.g. at begining of game level
+Adivery.prepareAppOpenAd(zoneId);
+```
+
+* :alert: Adivery will automatically request next ad when current ad is displayed and there is no need to call `prepareInterstitialAd` again.
+
+To get events related to Interstitial ads use code bellow.
+
+```javascript
+document.addEventListener('onAppOpenAdLoaded', function(event) {
+	if (typeof event.originalEvent !== 'undefined') event = event.originalEvent;
+    var data = eevent.detail || event.data || event;
+
+	console.log("Adivery AppOpen Loaded", data.placementId);
+});
+```
+
+### Displaying Ads
+
+To display ads just call `showAd` or `showAppOpenAd` depending on if you want to display interstitial, rewareded ads or AppOpen ads.
+
+```javascript
+Adivery.showAd('ZoneId');
+
+Adivery.showAppOpenAd('ZoneId');
+```
+
+
+### Native Ads
+
+To get a Native ad use `requestNativeAd` function to load a native ad.
+
+```javascript
+Adivery.requestNativeAd('ZoneId`);
+```
+
+To get loaded ad and begin displaying it, use this code.
+
+```javascript
+document.addEventListener('nativeAdLoaded', function(event) {
+	if (typeof event.originalEvent !== 'undefined') event = event.originalEvent;
+    var data = eevent.detail || event.data || event;
+
+	console.log(data['headline']);
+	console.log(data['description']);
+	console.log(data['advertiser']);
+	console.log(data['callToAction']);
+	console.log(data['icon']);
+	console.log(data['image']);
+});
+```
+
+### Handling impression and click of Native ads
+
+To record Impression of native ad in your application use this code.
+
+Please have in mind to call this code only and only if Ad is displayed to the user.
+
+```javascript
+Adivery.recordNativeAdImpression();
+```
+
+Finally to record click of native ads, use this code.
+
+Please have in mine, calling this function will navigate user to market or web browser depending on what ad is dispaying, so call it when user actually clicks on CTA button.
+
+```javascript
+Adivery.recordNativeAdClick();
+```
+
 
 ## API
 
@@ -272,38 +384,14 @@ document.addEventListener('onError', function(e){
 });
 ```
 
-## Wiki and Docs
-
-Quick start, simply copy & paste:
-* [Example Code](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.0-Quick-Start-Example-Code)
-* [Complete Demo index.html](https://github.com/vinoosir/adivery-cordova-plugin/blob/master/test/index.html)
-
-API Reference:
-* [API Overview](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.1-API-Overview)
-* [How to Use Banner](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.2-Methods-for-Banner)
-* [How to Use Interstitial](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.3-Methods-for-Interstitial)
-* [How to Use Rewarded](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.4-Methods-for-Rewarded)
-* [How to Handle Ad Events](https://github.com/vinoosir/adivery-cordova-plugin/wiki/1.5-Events)
-
-Other Documentations:
-* [ChangeLog](https://github.com/vinoosir/adivery-cordova-plugin/wiki/ChangeLog)
-* [FAQ](https://github.com/vinoosir/adivery-cordova-plugin/wiki/FAQ)
-
-## Screenshots
-
-Android Banner | Android Interstitial
--------|---------------
-![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_banner.jpg) | ![ScreenShot](https://raw.githubusercontent.com/VinoosIr/adivery-cordova-plugin/master/docs/screenshot_interstitial.jpg)
-
-
 ## License
 
 You can use the plugin for free.
 
 ## Credits
 
-This project is created and maintained by Milad Mohammadi.
+This project is created and maintained by Milad Mohammadi and then updated to latest fearures by Adivery Team.
 
 More Cordova/PhoneGap plugins by Milad Mohammadi, [find them in plugin registry](http://plugins.cordova.io/#/search?search=miladesign), or [find them in npm](https://www.npmjs.com/~miladesign).
 
-Project outsourcing and consulting service is also available. Please [contact us](mailto:rezagah.milad@gmail.com) if you have the business needs.
+More about [Adivery](https://adivery.com)
